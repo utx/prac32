@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice Test 32</title>
+<style>
+  :root {
+    --ink: #1b2a41;
+    --ink-soft: #55627a;
+    --line: #d8dde6;
+    --paper: #ffffff;
+    --field: #f3f5f8;
+    --pitch: #2e7d4f;
+    --pitch-deep: #23603c;
+    --correct: #1e8e5a;
+    --wrong: #c43d3d;
+    --correct-bg: #e6f5ec;
+    --wrong-bg: #fbe9e9;
+    --amber: #b8860b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--field); color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 17px; line-height: 1.5; }
+
+  header {
+    background: var(--ink); color: #fff; position: sticky; top: 0; z-index: 5;
+  }
+  .bar { max-width: 960px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 20px; }
+  .bar .title { font-weight: 600; }
+  .bar .section-name { color: #c6d0e0; }
+  .bar .spacer { flex: 1; }
+
+  main { max-width: 960px; margin: 28px auto 80px; padding: 0 24px; }
+  .sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 32px 40px; }
+  h1 { font-size: 28px; margin: 0 0 6px; font-weight: 700; }
+  h2 { font-size: 22px; margin: 0 0 16px; font-weight: 700; }
+  p.lead { color: var(--ink-soft); margin: 0 0 20px; }
+
+  .instructions ol { padding-left: 22px; }
+  .instructions li { margin-bottom: 6px; }
+  .plan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 28px; }
+  .plan div { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .plan strong { display: block; margin-bottom: 4px; }
+  .plan span { color: var(--ink-soft); font-size: 15px; }
+
+  button.primary {
+    background: var(--pitch); color: #fff; border: 0; border-radius: 6px; font-size: 17px; font-weight: 600;
+    padding: 12px 26px; cursor: pointer; font-family: inherit;
+  }
+  button.primary:hover { background: var(--pitch-deep); }
+  button.primary:focus-visible, .option:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+  /* passage + questions */
+  .two-col { display: grid; grid-template-columns: 5fr 6fr; gap: 40px; align-items: start; }
+  .passage { position: sticky; top: 76px; }
+  .passage-note { margin: 0 0 14px; font-style: italic; color: var(--ink-soft); }
+
+  .question { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .question:last-of-type { border-bottom: 0; }
+  .qhead { display: flex; gap: 12px; align-items: baseline; margin-bottom: 12px; }
+  .qnum { font-weight: 700; min-width: 26px; }
+  .stem { margin: 0; }
+  .stem em.speaker { font-style: normal; font-weight: 600; }
+  .stem .facts { margin: 8px 0 0 0; padding-left: 20px; }
+  .stem .facts li { margin: 2px 0; }
+  .stem .quote { margin: 10px 0 0 0; padding: 10px 14px; background: var(--field); border-left: 3px solid var(--line); border-radius: 0 4px 4px 0; }
+  .options { display: grid; gap: 8px; margin: 14px 0 0 38px; }
+  .option {
+    display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px;
+    cursor: pointer; font: inherit; color: inherit;
+  }
+  .option:hover { border-color: var(--ink-soft); }
+  .option .letter { flex: 0 0 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+  .option.selected { border-color: var(--ink); background: #eef2f8; }
+  .option.selected .letter { background: var(--ink); color: #fff; }
+
+  .submit-row { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
+  .submit-row .status { color: var(--ink-soft); font-size: 15px; }
+
+
+  /* prose passage */
+  .prose { font-family: Georgia, "Times New Roman", serif; font-size: 17px; line-height: 1.6; }
+  .prose h3 { font-family: inherit; font-size: 22px; margin: 0 0 14px; font-weight: 700; }
+  .prose p { margin: 0 0 12px; }
+  .passage { max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 8px; }
+
+
+  /* poem passage */
+  .poem { font-size: 17px; line-height: 1.6; }
+  .poem .stanza { margin: 0 0 18px; position: relative; padding-left: 32px; }
+  .poem .stanza .vn { position: absolute; left: 0; top: 1px; font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px; color: var(--ink-soft); }
+  .poem .stanza .line { display: block; }
+
+
+
+  /* letter-only options and shared option lists */
+  .options.letters { grid-template-columns: repeat(5, 54px); gap: 10px; }
+  .options.letters .option { justify-content: center; padding: 9px; }
+  .choice-list { border: 1px solid var(--line); border-radius: 6px; padding: 14px 18px; margin: 0 0 26px; }
+  .choice-list ol { list-style: none; margin: 0; padding: 0; }
+  .choice-list li { display: flex; gap: 12px; margin-bottom: 8px; }
+  .choice-list li:last-child { margin-bottom: 0; }
+  .choice-list .letter { flex: 0 0 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+
+
+  /* multi-extract passage */
+  .extract { margin: 0 0 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; }
+  .extract h4 { font-family: "Segoe UI", Arial, sans-serif; font-size: 14px; margin: 0 0 6px; letter-spacing: .02em; }
+  .extract p { margin: 0; font-size: 16px; line-height: 1.55; }
+  .options.letters.four { grid-template-columns: repeat(4, 54px); }
+
+  /* cloze gaps */
+  .gap { color: var(--ink-soft); }
+  .gap.filled { color: var(--ink); font-weight: 600; background: #eef2f8; box-shadow: inset 0 -2px 0 var(--pitch); }
+  .gap.filled.correct { color: var(--correct); background: var(--correct-bg); box-shadow: inset 0 -2px 0 var(--correct); }
+
+  /* data tables inside stems */
+  table.grid { border-collapse: collapse; margin: 10px 0 0; font-size: 16px; }
+  table.grid th, table.grid td { border: 1px solid var(--ink); padding: 5px 14px; text-align: left; }
+  table.grid th { background: var(--field); font-weight: 600; }
+
+  /* visual (picture) options */
+  .options.visual { grid-template-columns: repeat(auto-fit, minmax(0, max-content)); gap: 14px; }
+  .options.visual .option { flex-direction: column; align-items: center; gap: 8px; padding: 10px; }
+  .options.visual .option .letter { flex: none; width: 28px; height: 28px; }
+  .options.visual .option svg { display: block; }
+  @media (max-width: 760px) { .options.visual { grid-template-columns: repeat(2, max-content); } }
+
+
+  /* v7 additions */
+  .stem .note { margin: 0 0 8px; font-style: italic; color: var(--ink-soft); font-size: 15px; }
+  .stem ol.statements { margin: 10px 0 0; padding-left: 26px; }
+  .stem ol.statements li { margin: 4px 0; padding-left: 4px; }
+  .figure { margin: 12px 0; }
+  .figure svg { display: block; max-width: 100%; height: auto; }
+  .option svg { display: block; max-width: 100%; height: auto; }
+  .option:has(svg) { align-items: center; }
+  .digit-cards { display: flex; gap: 22px; flex-wrap: wrap; margin: 12px 0 14px; }
+  .digit-card { width: 80px; height: 106px; border: 1.5px solid var(--ink); border-radius: 10px; background: #fdf3e1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .digit-card span { font-size: 56px; font-weight: 700; line-height: 1; }
+  .digit-card small { font-size: 12px; margin-top: 6px; letter-spacing: .03em; }
+  .table-wrap { overflow-x: auto; max-width: 100%; }
+  @media (max-width: 760px) { table.grid th, table.grid td { padding: 4px 8px; font-size: 14px; } }
+  .poem .stanza .line { padding-left: 1.2em; text-indent: -1.2em; }
+  .tags { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0 14px; }
+  .tag { border: 1.5px solid var(--ink); border-radius: 8px 22px 22px 8px; padding: 8px 22px 8px 14px; background: #fdf3e1;
+    display: flex; flex-direction: column; min-width: 96px; }
+  .tag small { font-size: 13px; color: var(--ink-soft); }
+  .tag span { font-size: 22px; font-weight: 700; }
+  .hrow { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 22px; margin: 14px 0 16px; }
+  .hnum { display: inline-flex; gap: 3px; }
+  .hnum .dig, .hnum .hid { width: 30px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ink); border-radius: 5px; font-size: 22px; font-weight: 700; background: #fff; }
+  .hnum .hid { background: var(--ink); color: #fff; font-size: 18px; }
+  .hnum .hid.sq { color: #f2c14e; }
+  .hnum .hid.tri { color: #8fd3c7; }
+  .explain .skill { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+
+  /* review */
+  .result-line { display: flex; gap: 10px; align-items: center; font-weight: 600; margin-bottom: 10px; }
+  .badge { padding: 2px 10px; border-radius: 4px; font-size: 14px; }
+  .badge.ok { background: var(--correct-bg); color: var(--correct); }
+  .badge.no { background: var(--wrong-bg); color: var(--wrong); }
+  .option.is-correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.is-correct .letter { border-color: var(--correct); background: var(--correct); color: #fff; }
+  .option.is-wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .option.is-wrong .letter { border-color: var(--wrong); background: var(--wrong); color: #fff; }
+  .option[disabled] { cursor: default; }
+  .explain { margin: 14px 0 0 38px; padding: 14px 16px; background: var(--field); border-radius: 6px; font-size: 16px; }
+  .explain p { margin: 0 0 8px; }
+  .explain p:last-child { margin: 0; }
+  .explain .why-not { color: var(--ink-soft); }
+
+  .section-score { font-size: 18px; margin: 0 0 24px; }
+  .section-score b { font-size: 26px; }
+
+  /* final */
+  .final-score { text-align: center; padding: 20px 0 10px; }
+  .final-score .big { font-size: 64px; font-weight: 700; line-height: 1; }
+  .final-score .of { color: var(--ink-soft); font-size: 20px; }
+  .breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 26px 0 30px; }
+  .breakdown div { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .breakdown strong { display: block; font-size: 24px; }
+  .breakdown span { color: var(--ink-soft); font-size: 15px; }
+  .verdict { margin: 0 0 24px; }
+  .center { text-align: center; }
+
+  @media (max-width: 760px) {
+    .two-col { grid-template-columns: 1fr; }
+    .passage { position: static; }
+    .plan, .breakdown { grid-template-columns: 1fr; }
+    .sheet { padding: 22px; }
+    .options, .explain { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .option { transition: background .12s, border-color .12s; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <span class="title">Practice Test 32</span>
+    <span class="section-name" id="hdr-section"></span>
+    <span class="spacer"></span>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+/* ---------------------------------------------------------------
+   TEST CONTENT — Practice Test 32
+   --------------------------------------------------------------- */
+
+let passMode = "answer";
+const INK = "#1b2a41";
+
+/* ---- Reading: four extracts on one theme ---- */
+const EXTRACTS = [
+  `In 1802 and 1803, Matthew Flinders sailed his ship, the <i>Investigator</i>, all the way around the land then known as New Holland, mapping its coastline in remarkable detail. His charts were so accurate that sailors went on using some of them for many years. Flinders also believed the continent deserved a simpler name. In a book published in 1814, he suggested “Australia”, and a few years later Governor Lachlan Macquarie began using the name in his official letters.`,
+  `Nell turned the map around for the third time. According to the arrow, the creek should have been on her left, yet there it was, glinting through the trees on her right. Either the map was wrong, or she was. She sat down on a log, took a deep breath and remembered what Grandpa always said: find something big that doesn’t move. The fire tower! She found it on the map, turned the map until it lined up with the real tower, and suddenly everything made sense.`,
+  `Phone maps have made getting lost almost impossible, or so it seems. Some researchers now worry that people who simply follow turn-by-turn directions pay less attention to their surroundings, and may find it harder to build a picture of a place in their heads. If the battery goes flat, they can be left with no idea where they are. Using a paper map now and then, these researchers suggest, may help to keep our sense of direction sharp.`,
+  `For tens of thousands of years, Aboriginal people have travelled across Australia without paper maps. Knowledge of the land is carried in songlines: routes recorded in songs, stories and dances that name landmarks, waterholes and the paths between them. By singing the verses in the right order, a traveller could follow a route, sometimes for hundreds of kilometres. Songlines hold far more than directions, though. They also carry law, history and responsibility for Country.`
+];
+const PASSAGE = {
+  title: "Finding the Way",
+  note: "Read the four extracts below about finding the way.",
+  html: EXTRACTS.map((t, i) => `<div class="extract"><h4>Extract ${"ABCD"[i]}</h4><p>${t}</p></div>`).join("")
+};
+
+/* ---- Thinking Skills Q2: ribbon folded three times ---- */
+const RIBBON_SVG = (() => {
+  const steps = [[320, "Start"], [160, "Fold 1"], [80, "Fold 2"], [40, "Fold 3"]];
+  let g = "", y = 14;
+  steps.forEach(([w, label], i) => {
+    const h = 12 + i * 5;
+    g += `<text x="0" y="${y + h / 2 + 4}" font-size="12" fill="${INK}">${label}</text>`;
+    g += `<rect x="60" y="${y}" width="${w}" height="${h}" rx="${i ? 3 : 1}" fill="#e78fb3" stroke="${INK}" stroke-width="1.6"/>`;
+    if (i === 3) {
+      g += `<line x1="${60 + w / 2}" y1="${y - 10}" x2="${60 + w / 2}" y2="${y + h + 10}" stroke="#c43d3d" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="${60 + w + 10}" y="${y + h / 2 + 5}" font-size="13" fill="#c43d3d">← cut along the dashed line</text>`;
+    }
+    y += h + 22;
+  });
+  return `<svg viewBox="0 0 400 ${y}" width="400" height="${y}" role="img" aria-label="A long ribbon is folded in half three times, getting half as long each time. A dashed line shows a cut straight across the middle of the folded ribbon.">${g}</svg>`;
+})();
+
+/* ---- Maths Q2: stacked fractions ---- */
+const frac = (n, d, big) => `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-size:${big ? "1.05em" : "1em"}"><span style="padding:0 3px 1px">${n}</span><span style="border-top:1.6px solid currentColor;padding:1px 3px 0">${d}</span></span>`;
+
+/* ---- Maths Q3: plan of two rooms ---- */
+const ROOMS_SVG = (() => {
+  const u = 26, ox = 30, oy = 34;
+  const X = x => ox + x * u, Y = y => oy + y * u;
+  const arrowH = (x1, x2, y, t, below) => `<line x1="${X(x1) + 3}" y1="${Y(y)}" x2="${X(x2) - 3}" y2="${Y(y)}" stroke="${INK}" stroke-width="1.3"/>
+      <path d="M${X(x1) + 3} ${Y(y)} l7 -4 M${X(x1) + 3} ${Y(y)} l7 4 M${X(x2) - 3} ${Y(y)} l-7 -4 M${X(x2) - 3} ${Y(y)} l-7 4" stroke="${INK}" stroke-width="1.3"/>
+      <text x="${(X(x1) + X(x2)) / 2}" y="${Y(y) + (below ? 16 : -6)}" font-size="13" text-anchor="middle" fill="${INK}">${t}</text>`;
+  const arrowV = (y1, y2, x, t, right) => `<line x1="${X(x)}" y1="${Y(y1) + 3}" x2="${X(x)}" y2="${Y(y2) - 3}" stroke="${INK}" stroke-width="1.3"/>
+      <path d="M${X(x)} ${Y(y1) + 3} l-4 7 M${X(x)} ${Y(y1) + 3} l4 7 M${X(x)} ${Y(y2) - 3} l-4 -7 M${X(x)} ${Y(y2) - 3} l4 -7" stroke="${INK}" stroke-width="1.3"/>
+      <text x="${X(x) + (right ? 8 : -8)}" y="${(Y(y1) + Y(y2)) / 2 + 4}" font-size="13" text-anchor="${right ? "start" : "end"}" fill="${INK}">${t}</text>`;
+  let g = `<rect x="${X(0)}" y="${Y(0)}" width="${5 * u}" height="${8 * u}" fill="#fff" stroke="${INK}" stroke-width="2"/>
+           <rect x="${X(5)}" y="${Y(3)}" width="${6.6 * u}" height="${6 * u}" fill="#fff" stroke="${INK}" stroke-width="2"/>
+           <text x="${X(2.5)}" y="${Y(4)}" font-size="15" text-anchor="middle" fill="${INK}">40 m²</text>
+           <text x="${X(8.3)}" y="${Y(6.3)}" font-size="15" text-anchor="middle" fill="${INK}">30 m²</text>`;
+  g += arrowH(0, 5, -0.55, "5 m", false);
+  g += arrowV(0, 3, 5.6, "3 m", true);
+  g += arrowV(3, 9, 12.15, "6 m", true);
+  return `<svg viewBox="0 0 ${X(12) + 50} ${Y(9) + 14}" width="${X(12) + 50}" height="${Y(9) + 14}" role="img" aria-label="Plan of two rooms. The left room is 5 metres wide with an area of 40 square metres. The right room touches the right wall of the left room. Its top edge is 3 metres below the top of the left room. The right room is 6 metres tall with an area of 30 square metres, and it reaches lower than the left room.">${g}</svg>`;
+})();
+
+const SECTIONS = [
+  {
+    id: "reading",
+    name: "Reading",
+    passage: PASSAGE,
+    intro: "Read the four extracts about finding the way. For each question, choose the extract (A, B, C or D) which best answers it.",
+    questions: [
+      {
+        stem: "Which extract describes a skill that may get weaker if it is not used?",
+        letterOptions: true,
+        options: ["Extract A", "Extract B", "Extract C", "Extract D"],
+        answer: 2,
+        skill: "inferring an idea that is not stated directly",
+        explain: `<p>Extract C never uses the word “weaker”, but that is its point. People who just follow phone directions may find it harder to “build a picture of a place in their heads”, and using a paper map now and then “may help to keep our sense of direction sharp”. A sense of direction is a skill that fades if you stop using it.</p>
+                  <p class="why-not">Extract B is the trap: Nell uses a navigation skill, but the extract shows the skill <em>working</em>, not fading. Extract D describes a skill (following songlines), but nothing suggests it weakens. Extract A is about making maps.</p>`
+      },
+      {
+        stem: "In which extract does someone realise that a problem might be their own mistake?",
+        letterOptions: true,
+        options: ["Extract A", "Extract B", "Extract C", "Extract D"],
+        answer: 1,
+        skill: "inferring a character’s thoughts",
+        explain: `<p>Nell thinks, “Either the map was wrong, <b>or she was</b>.” She realises that she might be the one making the mistake. When she lines the map up properly, “everything made sense”, so the map had been right all along.</p>
+                  <p class="why-not">Extract C is the trap: it describes people who end up lost, partly because of how they use their phones. But it is about people in general, not someone who realises anything. Extracts A and D have no one making a mistake.</p>`
+      },
+      {
+        stem: "Which extract describes something that does more than one job?",
+        letterOptions: true,
+        options: ["Extract A", "Extract B", "Extract C", "Extract D"],
+        answer: 3,
+        skill: "identifying a connection described in a text",
+        explain: `<p>Extract D says songlines “hold far more than directions, though. They also carry law, history and responsibility for Country.” So a songline helps a traveller find the way <em>and</em> passes on law and history.</p>
+                  <p class="why-not">Extract A is the trap: Flinders himself did more than one thing (he mapped the coast and suggested a name), but the extract doesn’t describe one <em>thing</em> doing several jobs. His charts are only used for sailing. In Extract C, phone maps do one job (giving directions).</p>`
+      }
+    ]
+  },
+  {
+    id: "thinking",
+    name: "Thinking Skills",
+    intro: "Choose the one correct answer (A, B, C or D).",
+    questions: [
+      {
+        stem: `In a quiz show, every contestant still in the game answers one question in each round. At the end of each round, anyone who got their question wrong is out. The game ends at the end of a round when only one contestant is left, and that person is the winner.
+               <ul class="facts">
+                 <li>Kofi was knocked out in round 5.</li>
+                 <li>Amira won the game at the end of round 7.</li>
+               </ul>
+               <p style="margin:10px 0 0">Which one of the following <b>must</b> be true?</p>`,
+        options: ["Amira answered three more questions correctly than Kofi did.",
+                  "Amira answered two more questions correctly than Kofi did.",
+                  "Kofi was the last contestant to be knocked out before Amira won.",
+                  "Exactly one contestant was knocked out in each round of the game."],
+        answer: 0,
+        skill: "deciding what must be true",
+        explain: `<p><b>Kofi:</b> he survived rounds 1 to 4, so he answered those 4 questions correctly, then got round 5 wrong. That is <b>4</b> correct.</p>
+                  <p><b>Amira:</b> she was never knocked out, so she answered every question correctly in rounds 1 to 7. That is <b>7</b> correct.</p>
+                  <p>7 − 4 = <b>3</b>, so A must be true.</p>
+                  <p class="why-not">B is the trap: it compares the round numbers (7 − 5 = 2), forgetting that Kofi got his round 5 question <em>wrong</em>. C might not be true: other contestants could have been knocked out in rounds 6 and 7, and at least one must have gone out in round 7. D might not be true: we don’t know how many contestants there were or when they went out.</p>`
+      },
+      {
+        stem: `Mia folds a long ribbon in half. She folds it in half again, and then in half a third time. Then she cuts straight across the middle of the folded ribbon.
+               <div class="figure">${RIBBON_SVG}</div>
+               <p style="margin:10px 0 0">When she unfolds it, how many pieces of ribbon does she have?</p>`,
+        options: ["3", "8", "9", "16"],
+        answer: 2,
+        skill: "visualising folding and cutting",
+        explain: `<p>Each fold doubles the number of layers: 2, then 4, then <b>8</b> layers. One cut across the folded ribbon goes through all 8 layers, so the long ribbon is cut in <b>8</b> places.</p>
+                  <p>Cutting a ribbon in 8 places makes 8 + 1 = <b>9</b> pieces. (Think of a shorter case: cutting a ribbon in 1 place makes 2 pieces.)</p>
+                  <p class="why-not">8 (B) is the trap: it counts the cuts, not the pieces. 16 (D) assumes every layer splits into two separate pieces, but the folds hold some of those halves together. 3 (A) is the number of folds.</p>`
+      },
+      {
+        stem: `Each of the 20 students in a class chose exactly <b>two</b> of three after-school activities: swimming, tennis and archery.
+               <ul class="facts">
+                 <li>15 students chose swimming.</li>
+                 <li>11 students chose tennis.</li>
+               </ul>
+               <p style="margin:10px 0 0">How many students chose <b>both</b> swimming and tennis?</p>`,
+        options: ["5", "6", "9", "14"],
+        answer: 1,
+        skill: "reasoning with overlapping choices",
+        explain: `<p>20 students each made 2 choices, so there were 40 choices altogether. Swimming and tennis account for 15 + 11 = 26 of them, so archery was chosen 40 − 26 = <b>14</b> times.</p>
+                  <p>The other 20 − 14 = <b>6</b> students didn’t choose archery. Since everyone chose two activities, those 6 must have chosen swimming <em>and</em> tennis.</p>
+                  <p class="why-not">14 (D) is the trap: it is the number who chose archery, which is a step along the way, not the answer. 5 (A) is the number who didn’t choose swimming, and 9 (C) is the number who didn’t choose tennis.</p>`
+      }
+    ]
+  },
+  {
+    id: "maths",
+    name: "Mathematical Reasoning",
+    intro: "Choose the one correct answer (A, B, C, D or E). No calculators.",
+    questions: [
+      {
+        stem: `In an open-water swimming race, Jess swam across the bay in 1 hour, 4 minutes and 9.62 seconds.
+               <p style="margin:10px 0 0">How long is this in seconds, rounded to the nearest second?</p>`,
+        options: ["310", "3610", "3849", "3850", "10409"],
+        answer: 3,
+        skill: "converting hours and minutes to seconds, then rounding",
+        explain: `<p>1 hour = 60 minutes = 60 × 60 = <b>3600 seconds</b>.<br>
+                     4 minutes = 4 × 60 = <b>240 seconds</b>.</p>
+                  <p>3600 + 240 + 9.62 = 3849.62 seconds. The digit after the decimal point is 6, which is 5 or more, so round <b>up</b> to <b>3850</b>.</p>
+                  <p class="why-not">3849 (C) is the trap: it drops the decimal part instead of rounding. 310 (A) treats 1 hour as only 60 seconds. 3610 (B) forgets the 4 minutes. 10409 (E) writes “1 hour 4 minutes 9 seconds” as if it were one number.</p>`
+      },
+      {
+        stem: `What is the answer when you add these fractions correctly?
+               <p style="margin:12px 0 0;font-size:1.1em">${frac("666666", "999999")} + ${frac("111111", "333333")} + ${frac("444444", "888888")}</p>`,
+        options: [frac("1222221", "2222220"), frac("11", "20"), "1", `1${frac("1", "2")}`, "2"],
+        answer: 3,
+        skill: "simplifying fractions before adding",
+        explain: `<p>Don’t add these huge numbers! Simplify each fraction first by spotting the pattern:</p>
+                  <p>${frac("666666", "999999")} = ${frac("6", "9")} = ${frac("2", "3")}, &nbsp; ${frac("111111", "333333")} = ${frac("1", "3")}, &nbsp; ${frac("444444", "888888")} = ${frac("4", "8")} = ${frac("1", "2")}</p>
+                  <p>${frac("2", "3")} + ${frac("1", "3")} = 1, and 1 + ${frac("1", "2")} = <b>1${frac("1", "2")}</b>.</p>
+                  <p class="why-not">A is the trap: it adds the tops together and the bottoms together, which is never how fractions are added. B does the same with the single digits (6 + 1 + 4 over 9 + 3 + 8). C forgets the third fraction, and E rounds the answer up.</p>`
+      },
+      {
+        stem: `The diagram shows the plan of two rooms that join together. Some lengths and the areas of the rooms are given. (The diagram is not drawn to scale.)
+               <div class="figure">${ROOMS_SVG}</div>
+               <p style="margin:10px 0 0">What is the perimeter of the combined shape?</p>`,
+        options: ["36 m", "38 m", "43 m", "48 m", "70 m"],
+        answer: 1,
+        skill: "using area to find missing lengths, then perimeter",
+        explain: `<p>Find the missing lengths first:</p>
+                  <p>Left room: area 40 m², width 5 m, so its height is 40 ÷ 5 = <b>8 m</b>.<br>
+                     Right room: area 30 m², height 6 m, so its width is 30 ÷ 6 = <b>5 m</b>.</p>
+                  <p>The right room starts 3 m down and is 6 m tall, so it reaches 9 m down, 1 m lower than the left room.</p>
+                  <p>Walk around the outside: 5 (top of left room) + 8 (left side) + 5 (bottom of left room) + 1 (step down) + 5 (bottom of right room) + 6 (right side) + 5 (top of right room) + 3 (step up) = <b>38 m</b>.</p>
+                  <p>A shortcut: the outline has no dents, so its perimeter is the same as a rectangle 10 m wide and 9 m tall: 2 × (10 + 9) = 38 m.</p>
+                  <p class="why-not">48 m (D) adds the two rooms’ perimeters (26 + 22), but the 5 m where they touch is inside the shape, not around the outside. 43 m (C) only takes that shared wall away once, but both rooms lose it. 36 m (A) takes away the whole 6 m side, but only 5 m of it is shared. 70 m (E) adds the areas, not lengths.</p>`
+      }
+    ]
+  }
+];
+
+const LETTERS = ["A", "B", "C", "D", "E"];
+const app = document.getElementById("app");
+const hdrSection = document.getElementById("hdr-section");
+let responses = SECTIONS.map(s => s.questions.map(() => null));
+let current = 0;
+
+function showStart() {
+  hdrSection.textContent = "";
+  app.innerHTML = `
+    <div class="sheet instructions">
+      <h1>Practice paper 32</h1>
+      <p class="lead">Three short sections: reading, thinking skills and maths.</p>
+      <div class="plan">
+        ${SECTIONS.map(s => `<div><strong>${s.name}</strong><span>${s.questions.length} questions</span></div>`).join("")}
+      </div>
+      <ol>
+        <li>Take as long as you need — there is no time limit.</li>
+        <li>Answer all three questions in a section, then press <strong>Submit answers</strong> to see how you went.</li>
+        <li>You don’t lose marks for wrong answers, so attempt every question.</li>
+        <li>Your overall mark out of 9 is shown at the end.</li>
+      </ol>
+      <button class="primary" id="start">Start the reading section</button>
+    </div>`;
+  document.getElementById("start").onclick = () => { current = 0; responses = SECTIONS.map(s => s.questions.map(() => null)); showSection(); };
+}
+
+function renderPassage(pass) {
+  return `<div class="passage">
+    <p class="passage-note">${pass.note}</p>
+    <div class="prose"><h3>${pass.title}</h3><div id="passage-body">${typeof pass.html === "function" ? pass.html() : pass.html}</div></div>
+  </div>`;
+}
+
+function refreshPassage() {
+  const pass = SECTIONS[current].passage;
+  const el = document.getElementById("passage-body");
+  if (el && pass && typeof pass.html === "function") el.innerHTML = pass.html();
+}
+
+function renderQuestions(section, mode) {
+  return section.questions.map((q, qi) => {
+    const chosen = responses[current][qi];
+    const opts = q.options.map((o, oi) => {
+      let cls = "option";
+      if (mode === "answer" && chosen === oi) cls += " selected";
+      if (mode === "review") {
+        if (oi === q.answer) cls += " is-correct";
+        else if (chosen === oi) cls += " is-wrong";
+      }
+      return `<button type="button" class="${cls}" data-q="${qi}" data-o="${oi}" ${mode === "review" ? "disabled" : ""}>
+                <span class="letter">${LETTERS[oi]}</span>${q.letterOptions ? "" : `<span>${o}</span>`}</button>`;
+    }).join("");
+    const optCls = q.visualOptions ? "options visual" : (q.letterOptions ? "options letters" : "options");
+    let result = "";
+    if (mode === "review") {
+      const right = chosen === q.answer;
+      const label = chosen === null ? "Not answered" : (right ? "Correct" : "Incorrect");
+      result = `<div class="result-line"><span class="badge ${right ? "ok" : "no"}">${label}</span>
+                <span>Correct answer: ${LETTERS[q.answer]}${chosen !== null && !right ? ` · You chose ${LETTERS[chosen]}` : ""}</span></div>`;
+    }
+    return `<div class="question">
+      <div class="qhead"><span class="qnum">${qi + 1}</span><div class="stem">${q.stem}</div></div>
+      ${result}
+      <div class="${optCls}">${opts}</div>
+      ${mode === "review" ? `<div class="explain">${q.skill ? `<p class="skill">Skill tested: ${q.skill}</p>` : ""}${q.explain}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function showSection() {
+  passMode = "answer";
+  const s = SECTIONS[current];
+  hdrSection.textContent = `${s.name} · Section ${current + 1} of ${SECTIONS.length}`;
+  const qs = `<div>
+      <h2>${s.name}</h2>
+      <p class="lead">${s.intro}</p>
+      ${s.preamble || ""}
+      ${renderQuestions(s, "answer")}
+      <div class="submit-row">
+        <button class="primary" id="submit">Submit answers</button>
+        <span class="status" id="status"></span>
+      </div>
+    </div>`;
+  app.innerHTML = `<div class="sheet">${s.passage ? `<div class="two-col">${renderPassage(s.passage)}${qs}</div>` : qs}</div>`;
+
+  app.querySelectorAll(".option").forEach(btn => {
+    btn.onclick = () => {
+      const qi = +btn.dataset.q, oi = +btn.dataset.o;
+      responses[current][qi] = oi;
+      app.querySelectorAll(`.option[data-q="${qi}"]`).forEach(b => b.classList.toggle("selected", +b.dataset.o === oi));
+      refreshPassage();
+      updateStatus();
+    };
+  });
+  document.getElementById("submit").onclick = () => {
+    const unanswered = responses[current].filter(r => r === null).length;
+    if (unanswered && !confirm(`You have ${unanswered} unanswered question${unanswered > 1 ? "s" : ""}. Submit anyway?`)) return;
+    showReview();
+  };
+  updateStatus();
+  window.scrollTo(0, 0);
+}
+
+function updateStatus() {
+  const done = responses[current].filter(r => r !== null).length;
+  const el = document.getElementById("status");
+  if (el) el.textContent = `${done} of ${SECTIONS[current].questions.length} answered`;
+}
+
+function sectionScore(i) {
+  return SECTIONS[i].questions.reduce((n, q, qi) => n + (responses[i][qi] === q.answer ? 1 : 0), 0);
+}
+
+function showReview() {
+  passMode = "review";
+  const s = SECTIONS[current];
+  const score = sectionScore(current);
+  const last = current === SECTIONS.length - 1;
+  hdrSection.textContent = `${s.name} · Review`;
+  const body = `<div>
+      <h2>${s.name} — review</h2>
+      <p class="section-score">You scored <b>${score}</b> out of ${s.questions.length}</p>
+      ${s.preamble || ""}
+      ${renderQuestions(s, "review")}
+      <div class="submit-row">
+        <button class="primary" id="next">${last ? "See your overall mark" : `Start the ${SECTIONS[current + 1].name.split(" — ")[0].toLowerCase()} section`}</button>
+      </div>
+    </div>`;
+  app.innerHTML = `<div class="sheet">${s.passage ? `<div class="two-col">${renderPassage(s.passage)}${body}</div>` : body}</div>`;
+  document.getElementById("next").onclick = () => { if (last) showFinal(); else { current++; showSection(); } };
+  window.scrollTo(0, 0);
+}
+
+function showFinal() {
+  hdrSection.textContent = "Results";
+  const total = SECTIONS.reduce((n, _, i) => n + sectionScore(i), 0);
+  const max = SECTIONS.reduce((n, s) => n + s.questions.length, 0);
+  let verdict;
+  if (total === max) verdict = "Full marks. Every question right, across all three sections.";
+  else if (total >= 7) verdict = "A strong result. Look back at the questions you missed — the explanations show exactly where the trap was.";
+  else if (total >= 5) verdict = "A solid attempt. The sections where you dropped marks are the ones to practise next.";
+  else verdict = "A good start. Re-read the explanations for each section, then try the paper again.";
+  app.innerHTML = `
+    <div class="sheet">
+      <div class="final-score"><div class="big">${total}</div><div class="of">out of ${max}</div></div>
+      <div class="breakdown">
+        ${SECTIONS.map((s, i) => `<div><strong>${sectionScore(i)} / ${s.questions.length}</strong><span>${s.name}</span></div>`).join("")}
+      </div>
+      <p class="verdict center">${verdict}</p>
+      <div class="center"><button class="primary" id="again">Try the paper again</button></div>
+    </div>`;
+  document.getElementById("again").onclick = showStart;
+  window.scrollTo(0, 0);
+}
+
+
+showStart();
+</script>
+</body>
+</html>
